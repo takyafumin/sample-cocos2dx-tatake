@@ -38,7 +38,15 @@ bool GameScene::init()
 	background->setAnchorPoint(Point(0, 0));
 	this->addChild(background);
 
-	this->start();
+	// スタートボタン表示
+	auto startButton = MenuItemFont::create("Start", [this](Ref* sender){
+		static_cast<MenuItemFont*>(sender)->removeFromParent();
+		this->start();
+	});
+
+	auto menu = Menu::create(startButton, nullptr);
+	this->addChild(menu);
+
 
 	return true;
 }
