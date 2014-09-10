@@ -53,9 +53,6 @@ bool GameScene::init()
 	auto menu = Menu::create(startButton, nullptr);
 	this->addChild(menu);
 
-	// ゲーム時間設定
-	mTimeValue = 15.0f;
-
 	// スコアラベル表示
 	mpScoreLabel = Label::createWithSystemFont("", LABEL_FONT, 24, Size(320, 50), TextHAlignment::LEFT, TextVAlignment::CENTER);
 	mpScoreLabel->setAnchorPoint(Point(0.0f, 0.5f));
@@ -88,6 +85,11 @@ bool GameScene::init()
 	this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
 
 
+	// パラメータ初期化
+	mTimeValue = 15.0f;
+	updateScoreLabel();
+	updateTimeLabel();
+
 	return true;
 }
 
@@ -96,32 +98,52 @@ bool GameScene::init()
  */
 void GameScene::start()
 {
-	static const uint numSlimes = 3;
-	for (uint i = 0; i < numSlimes; i++)
-	{
+	auto setupGame = [this](){
+		static const uint numSlimes = 3;
+		for (uint i = 0; i < numSlimes; i++)
+		{
 
-		// スライム表示
-		auto slime = Sprite::create(PngSlime_1_1);
-		slime->setPosition(160, 200 + i * 50);
-		this->addChild(slime);
+			// スライム表示
+			auto slime = Sprite::create(PngSlime_1_1);
+			slime->setPosition(160, 200 + i * 50);
+			this->addChild(slime);
 
-		// アニメーション設定
-		auto animation = Animation::create();
-		animation->addSpriteFrameWithFile(PngSlime_1_1);
-		animation->addSpriteFrameWithFile(PngSlime_1_2);
-		animation->setDelayPerUnit(0.5f);
-		slime->runAction(
-				RepeatForever::create(
-						Animate::create(animation)
-				)
-		);
+			// アニメーション設定
+			auto animation = Animation::create();
+			animation->addSpriteFrameWithFile(PngSlime_1_1);
+			animation->addSpriteFrameWithFile(PngSlime_1_2);
+			animation->setDelayPerUnit(0.5f);
+			slime->runAction(
+					RepeatForever::create(
+							Animate::create(animation)
+					)
+			);
 
-		// 保持配列に追加
-		mSlimes.pushBack(slime);
-	}
+			// 保持配列に追加
+			mSlimes.pushBack(slime);
+		}
 
-	// 自動更新設定
-	this->scheduleUpdate();
+		// 自動更新設定
+		this->scheduleUpdate();
+	};
+
+	// 開始テキスト表示
+	auto label = Label::createWithSystemFont("START!", LABEL_FONT, 40, Size(320, 50), TextHAlignment::CENTER, TextVAlignment::CENTER);
+	this->addChild(label);
+
+	// 右から左へ
+	static const float labelY = 200;
+	static const float marginX = 200;
+	label->setPosition(320 + marginX, labelY);
+	label->runAction(
+			Sequence::create(
+					MoveTo::create(0.2f, Point(160, labelY)),
+					DelayTime::create(1.0f),
+					MoveTo::create(0.2f, Point(-marginX, labelY)),
+					CallFunc::create(setupGame),
+					RemoveSelf::create(),
+					nullptr)
+	);
 }
 
 
