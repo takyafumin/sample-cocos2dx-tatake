@@ -139,9 +139,9 @@ void GameScene::start()
 	label->setPosition(320 + marginX, labelY);
 	label->runAction(
 			Sequence::create(
-					MoveTo::create(0.2f, Point(160, labelY)),
-					DelayTime::create(1.0f),
-					MoveTo::create(0.2f, Point(-marginX, labelY)),
+					MoveTo::create(0.5f, Point(160, labelY)),
+					DelayTime::create(1.5f),
+					MoveTo::create(0.5f, Point(-marginX, labelY)),
 					CallFunc::create(setupGame),
 					RemoveSelf::create(),
 					nullptr)
@@ -167,22 +167,45 @@ void GameScene::finish()
 	// フレーム更新停止
 	this->unscheduleUpdate();
 
-	// リセットボタン表示
-	auto resetButton = MenuItemFont::create("Reset", [this](Ref* sender){
-		static_cast<MenuItemFont*>(sender)->removeFromParent();
+	// 終了処理定義
+	auto postFunc = [this](){
+		// リセットボタン表示
+		auto resetButton = MenuItemFont::create("Reset", [this](Ref* sender){
+			static_cast<MenuItemFont*>(sender)->removeFromParent();
 
-		// ゲームシーン再読み込み
-		auto nextScene = GameScene::createScene();
-		Director::getInstance()->replaceScene(nextScene);
-	});
+			// ゲームシーン再読み込み
+			auto nextScene = GameScene::createScene();
+			Director::getInstance()->replaceScene(nextScene);
+		});
 
-	auto menu = Menu::create(resetButton, nullptr);
-	this->addChild(menu);
+		auto menu = Menu::create(resetButton, nullptr);
+		this->addChild(menu);
+	};
+
+	// 終了テキスト表示
+	auto label = Label::createWithSystemFont("FINISH!", LABEL_FONT, 40, Size(320, 50), TextHAlignment::CENTER, TextVAlignment::CENTER);
+	this->addChild(label);
+
+	// 右から左へ
+	static const float labelY = 200;
+	static const float marginX = 200;
+	label->setPosition(320 + marginX, labelY);
+	label->runAction(
+			Sequence::create(
+					MoveTo::create(0.5f, Point(160, labelY)),
+					DelayTime::create(1.5f),
+					MoveTo::create(0.5f, Point(-marginX, labelY)),
+					CallFunc::create(postFunc),
+					RemoveSelf::create(),
+					nullptr)
+	);
 }
 
 
 /**
  * スライム移動処理
+ *
+ * @param target 対象スプライト
  */
 void GameScene::popSlime(Sprite* target)
 {
@@ -248,7 +271,7 @@ void GameScene::update(float dt)
 /**
  * 取得ポイント表示処理
  *
- * @param point
+ * @param point 表示位置
  * @param score スコア
  */
 void GameScene::showScore(const Point &point, uint score)
