@@ -53,11 +53,14 @@ private:
 	// スライムの移動
 	void popSlime(cocos2d::Sprite* target);
 
-	// スコア表示
+	// スコア表示更新
 	void updateScoreLabel();
 
-	// 残り時間表示
+	// 残り時間表示更新
 	void updateTimeLabel();
+
+	// 取得ポイント表示処理
+	void showScore(const cocos2d::Point &point, uint score);
 };
 
 #endif /* GAMESCENE_H_ */

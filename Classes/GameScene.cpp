@@ -75,6 +75,8 @@ bool GameScene::init()
 			if (distance <= 40.0f)
 			{
 				mScoreValue += 100;
+
+				this->showScore(slime->getPosition(), 100);
 				this->updateScoreLabel();
 				this->popSlime(slime);
 				return false;
@@ -241,4 +243,28 @@ void GameScene::update(float dt)
 	{
 		this->finish();
 	}
+}
+
+/**
+ * 取得ポイント表示処理
+ *
+ * @param point
+ * @param score スコア
+ */
+void GameScene::showScore(const Point &point, uint score)
+{
+	auto label = Label:: createWithSystemFont(StringUtils::format("%u", score), LABEL_FONT, 24, Size(160, 50), TextHAlignment::CENTER, TextVAlignment::CENTER);
+	label->setPosition(point);
+	this->addChild(label);
+
+	// 拡大しながら表示後、消える
+	label->setScale(0);
+	label->runAction(
+			Sequence::create(
+					ScaleTo::create(0.1f, 1.0f),
+					DelayTime::create(1.0f),
+					RemoveSelf::create(),
+					nullptr
+			)
+	);
 }
