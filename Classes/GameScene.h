@@ -37,6 +37,9 @@ private:
 
 	void start();
 	void finish();
+
+	// スライムの移動
+	void popSlime(cocos2d::Sprite* target);
 };
 
 #endif /* GAMESCENE_H_ */

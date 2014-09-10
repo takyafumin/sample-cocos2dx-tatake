@@ -47,6 +47,22 @@ bool GameScene::init()
 	auto menu = Menu::create(startButton, nullptr);
 	this->addChild(menu);
 
+	// タッチイベント設定
+	auto listener = EventListenerTouchOneByOne::create();
+	listener->onTouchBegan = [this](Touch* touch, Event* event) -> bool {
+		for (auto slime : mSlimes)
+		{
+			const float distance = slime->getPosition().getDistance(touch->getLocation());
+			if (distance <= 40.0f)
+			{
+				this->popSlime(slime);
+				return false;
+			}
+		}
+		return false;
+	};
+	this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, this);
+
 
 	return true;
 }
@@ -88,4 +104,16 @@ void GameScene::start()
 void GameScene::finish()
 {
 
+}
+
+
+void GameScene::popSlime(Sprite* target)
+{
+	target->setVisible(true);
+
+	static const float margin = 30.0f;
+	const float x = margin + CCRANDOM_0_1() * (320.0f - margin * 2);
+	const float y = margin + CCRANDOM_0_1() * 200.0f;
+
+	target->setPosition(x, y);
 }
