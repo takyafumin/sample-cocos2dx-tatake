@@ -32,6 +32,9 @@ private:
 	const std::string PngSlime_1_1 = PNG_SLIME_1_1;
 	const std::string PngSlime_1_2 = PNG_SLIME_1_2;
 
+	// スライム保持配列
+	cocos2d::Vector<cocos2d::Sprite*> mSlimes;
+
 	void start();
 	void finish();
 };

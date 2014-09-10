@@ -48,24 +48,29 @@ bool GameScene::init()
  */
 void GameScene::start()
 {
-	// スライム表示
-	auto slime = Sprite::create(PngSlime_1_1);
-	slime->setPosition(160,200);
+	static const uint numSlimes = 3;
+	for (uint i = 0; i < numSlimes; i++)
+	{
 
-	// アニメーション設定
-	auto animation = Animation::create();
-	animation->addSpriteFrameWithFile(PngSlime_1_1);
-	animation->addSpriteFrameWithFile(PngSlime_1_2);
-	animation->setDelayPerUnit(0.5f);
+		// スライム表示
+		auto slime = Sprite::create(PngSlime_1_1);
+		slime->setPosition(160, 200 + i * 50);
+		this->addChild(slime);
 
-	slime->runAction(
-			RepeatForever::create(
-					Animate::create(animation)
-			)
-	);
+		// アニメーション設定
+		auto animation = Animation::create();
+		animation->addSpriteFrameWithFile(PngSlime_1_1);
+		animation->addSpriteFrameWithFile(PngSlime_1_2);
+		animation->setDelayPerUnit(0.5f);
+		slime->runAction(
+				RepeatForever::create(
+						Animate::create(animation)
+				)
+		);
 
-	this->addChild(slime);
-
+		// 保持配列に追加
+		mSlimes.pushBack(slime);
+	}
 }
 
 
