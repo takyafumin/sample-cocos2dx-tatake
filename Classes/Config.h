@@ -14,6 +14,7 @@
 
 // スライム画像
 #define PNG_SLIME_1_1 "slime_1_1.png"
+#define PNG_SLIME_1_2 "slime_1_2.png"
 
 
 

@@ -43,16 +43,35 @@ bool GameScene::init()
 	return true;
 }
 
-
+/**
+ * スタート
+ */
 void GameScene::start()
 {
 	// スライム表示
 	auto slime = Sprite::create(PngSlime_1_1);
 	slime->setPosition(160,200);
+
+	// アニメーション設定
+	auto animation = Animation::create();
+	animation->addSpriteFrameWithFile(PngSlime_1_1);
+	animation->addSpriteFrameWithFile(PngSlime_1_2);
+	animation->setDelayPerUnit(0.5f);
+
+	slime->runAction(
+			RepeatForever::create(
+					Animate::create(animation)
+			)
+	);
+
 	this->addChild(slime);
 
 }
 
+
+/**
+ * 終了
+ */
 void GameScene::finish()
 {
 

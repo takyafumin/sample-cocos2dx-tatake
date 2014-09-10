@@ -30,6 +30,7 @@ private:
 
 	// スライム画像
 	const std::string PngSlime_1_1 = PNG_SLIME_1_1;
+	const std::string PngSlime_1_2 = PNG_SLIME_1_2;
 
 	void start();
 	void finish();
