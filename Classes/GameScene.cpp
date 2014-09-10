@@ -43,7 +43,6 @@ bool GameScene::init()
 		static_cast<MenuItemFont*>(sender)->removeFromParent();
 		this->start();
 	});
-
 	auto menu = Menu::create(startButton, nullptr);
 	this->addChild(menu);
 
@@ -107,6 +106,9 @@ void GameScene::finish()
 }
 
 
+/**
+ * スライム移動処理
+ */
 void GameScene::popSlime(Sprite* target)
 {
 	target->setVisible(true);
@@ -116,4 +118,20 @@ void GameScene::popSlime(Sprite* target)
 	const float y = margin + CCRANDOM_0_1() * 200.0f;
 
 	target->setPosition(x, y);
+
+
+	// 一定時間後に移動
+	static const int rePopTag = 100;
+	target->stopActionByTag(rePopTag);
+
+	auto rePop = Sequence::create(
+		DelayTime::create(1.0f),
+		CallFunc::create([this, target](){
+			this->popSlime(target);
+		}),
+		nullptr
+	);
+
+	rePop->setTag(rePopTag);
+	target->runAction(rePop);
 }
