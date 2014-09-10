@@ -23,6 +23,8 @@ public:
 	virtual bool init();
 	CREATE_FUNC(GameScene);
 
+	virtual void update(float dt);
+
 private:
 
 	// 背景画像
@@ -35,11 +37,27 @@ private:
 	// スライム保持配列
 	cocos2d::Vector<cocos2d::Sprite*> mSlimes;
 
+	// スコア
+	cocos2d::Label* mpScoreLabel;
+	uint mScoreValue;
+
+	// ゲーム時間
+	cocos2d::Label* mpTimeLabel;
+	float mTimeValue;
+
+
 	void start();
 	void finish();
 
+
 	// スライムの移動
 	void popSlime(cocos2d::Sprite* target);
+
+	// スコア表示
+	void updateScoreLabel();
+
+	// 残り時間表示
+	void updateTimeLabel();
 };
 
 #endif /* GAMESCENE_H_ */

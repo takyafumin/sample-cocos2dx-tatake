@@ -5,7 +5,10 @@
  *      Author: takyafumin
  */
 
+#include <string.h>
 #include "GameScene.h"
+
+#define LABEL_FONT "Arial-BoldMT"
 
 USING_NS_CC;
 
@@ -22,9 +25,13 @@ GameScene::~GameScene() {
 	// TODO Auto-generated destructor stub
 }
 
-GameScene::GameScene() {
-	// TODO 自動生成されたコンストラクター・スタブ
-
+GameScene::GameScene()
+:Layer()
+, mpScoreLabel(nullptr)
+, mScoreValue(0)
+, mpTimeLabel(nullptr)
+, mTimeValue(0)
+{
 }
 
 
@@ -46,6 +53,22 @@ bool GameScene::init()
 	auto menu = Menu::create(startButton, nullptr);
 	this->addChild(menu);
 
+	// ゲーム時間設定
+	mTimeValue = 15.0f;
+
+	// スコアラベル表示
+	mpScoreLabel = Label::createWithSystemFont("", LABEL_FONT, 24, Size(320, 50), TextHAlignment::LEFT, TextVAlignment::CENTER);
+	mpScoreLabel->setAnchorPoint(Point(0.0f, 0.5f));
+	mpScoreLabel->setPosition(10, 330);
+	this->addChild(mpScoreLabel);
+
+	// 時間ラベル表示
+	mpTimeLabel = Label::createWithSystemFont("", LABEL_FONT, 24, Size(320, 50), TextHAlignment::RIGHT, TextVAlignment::CENTER);
+	mpTimeLabel->setAnchorPoint(Point(1.0f, 0.5f));
+	mpTimeLabel->setPosition(320 - 10, 330);
+	this->addChild(mpTimeLabel);
+
+
 	// タッチイベント設定
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->onTouchBegan = [this](Touch* touch, Event* event) -> bool {
@@ -54,6 +77,8 @@ bool GameScene::init()
 			const float distance = slime->getPosition().getDistance(touch->getLocation());
 			if (distance <= 40.0f)
 			{
+				mScoreValue += 100;
+				this->updateScoreLabel();
 				this->popSlime(slime);
 				return false;
 			}
@@ -94,15 +119,41 @@ void GameScene::start()
 		// 保持配列に追加
 		mSlimes.pushBack(slime);
 	}
+
+	// 自動更新設定
+	this->scheduleUpdate();
 }
 
 
 /**
- * 終了
+ * 終了処理
  */
 void GameScene::finish()
 {
+	// 画面からスライムを消す
+	for (auto slime : mSlimes)
+	{
+		slime->stopAllActions();
+		slime->removeFromParent();
+	}
 
+	// 配列クリア
+	mSlimes.clear();
+
+	// フレーム更新停止
+	this->unscheduleUpdate();
+
+	// リセットボタン表示
+	auto resetButton = MenuItemFont::create("Reset", [this](Ref* sender){
+		static_cast<MenuItemFont*>(sender)->removeFromParent();
+
+		// ゲームシーン再読み込み
+		auto nextScene = GameScene::createScene();
+		Director::getInstance()->replaceScene(nextScene);
+	});
+
+	auto menu = Menu::create(resetButton, nullptr);
+	this->addChild(menu);
 }
 
 
@@ -134,4 +185,38 @@ void GameScene::popSlime(Sprite* target)
 
 	rePop->setTag(rePopTag);
 	target->runAction(rePop);
+}
+
+
+/**
+ * スコア表示処理
+ */
+void GameScene::updateScoreLabel()
+{
+	mpScoreLabel->setString(StringUtils::format("%upts", mScoreValue));
+}
+
+/**
+ * 残り時間表示
+ */
+void GameScene::updateTimeLabel()
+{
+	mpTimeLabel->setString(StringUtils::format("TIME：%.1f", mTimeValue));
+}
+
+/**
+ * フレーム更新処理
+ */
+void GameScene::update(float dt)
+{
+	// 残り時間を減算
+	mTimeValue -= dt;
+	mTimeValue = MAX(mTimeValue, 0);
+	this->updateTimeLabel();
+
+	// 終了判定
+	if (mTimeValue <= 0)
+	{
+		this->finish();
+	}
 }
